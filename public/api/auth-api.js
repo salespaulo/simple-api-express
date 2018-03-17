@@ -1,0 +1,39 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const log_1 = require("../log");
+const authService = require("../service/auth-service");
+const errors_1 = require("../utils/errors");
+const auth_filter_1 = require("./auth-filter");
+const express = require("express");
+const URI = '/auth';
+const me = (req, res, next) => {
+    auth_filter_1.decodedToken(req)
+        .then(decoded => res.json(decoded))
+        .catch(err => errors_1.newHttpResponse(err, res, next));
+};
+const logout = (req, res, next) => {
+    req.session.destroy();
+    res.status(200).json('Logout successfuly!');
+    return next();
+};
+const login = (req, res, next) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    log_1.default.debug(`Login username=${username} password=${password}`);
+    authService.login(username, password)
+        .then(user => {
+        res.json(user);
+    })
+        .catch(err => errors_1.newHttpResponse(err, res, next));
+};
+class AuthApi {
+    routes() {
+        return express.Router()
+            .get('/me', me)
+            .post('/login', login)
+            .get('/logout', logout);
+    }
+}
+const api = new AuthApi();
+exports.default = server => server.use(URI, api.routes());
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYXV0aC1hcGkuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi9zcmMvYXBwL2FwaS9hdXRoLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUdBLGdDQUEyQjtBQUMzQix1REFBc0Q7QUFDdEQsNENBQWlEO0FBQ2pELCtDQUE0QztBQUU1QyxtQ0FBa0M7QUFFbEMsTUFBTSxHQUFHLEdBQUcsT0FBTyxDQUFBO0FBQ25CLE1BQU0sRUFBRSxHQUFHLENBQUMsR0FBRyxFQUFFLEdBQUcsRUFBRSxJQUFJLEVBQUUsRUFBRTtJQUMxQiwwQkFBWSxDQUFDLEdBQUcsQ0FBQztTQUNoQixJQUFJLENBQUMsT0FBTyxDQUFDLEVBQUUsQ0FBRSxHQUFHLENBQUMsSUFBSSxDQUFDLE9BQU8sQ0FBQyxDQUFDO1NBQ25DLEtBQUssQ0FBQyxHQUFHLENBQUMsRUFBRSxDQUFDLHdCQUFlLENBQUMsR0FBRyxFQUFFLEdBQUcsRUFBRSxJQUFJLENBQUMsQ0FBQyxDQUFBO0FBQ2xELENBQUMsQ0FBQTtBQUVELE1BQU0sTUFBTSxHQUFHLENBQUMsR0FBRyxFQUFFLEdBQUcsRUFBRSxJQUFJLEVBQUUsRUFBRTtJQUM5QixHQUFHLENBQUMsT0FBTyxDQUFDLE9BQU8sRUFBRSxDQUFBO0lBQ3JCLEdBQUcsQ0FBQyxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUMsSUFBSSxDQUFDLHFCQUFxQixDQUFDLENBQUE7SUFDM0MsTUFBTSxDQUFDLElBQUksRUFBRSxDQUFBO0FBQ2pCLENBQUMsQ0FBQTtBQUVELE1BQU0sS0FBSyxHQUFHLENBQUMsR0FBRyxFQUFFLEdBQUcsRUFBRSxJQUFJLEVBQUUsRUFBRTtJQUM3QixNQUFNLFFBQVEsR0FBRyxHQUFHLENBQUMsSUFBSSxDQUFDLFFBQVEsQ0FBQTtJQUNsQyxNQUFNLFFBQVEsR0FBRyxHQUFHLENBQUMsSUFBSSxDQUFDLFFBQVEsQ0FBQTtJQUNsQyxhQUFNLENBQUMsS0FBSyxDQUFDLGtCQUFrQixRQUFRLGFBQWEsUUFBUSxFQUFFLENBQUMsQ0FBQTtJQUUvRCxXQUFXLENBQUMsS0FBSyxDQUFDLFFBQVEsRUFBRSxRQUFRLENBQUM7U0FDcEMsSUFBSSxDQUFDLElBQUksQ0FBQyxFQUFFO1FBQ1QsR0FBRyxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQTtJQUNsQixDQUFDLENBQUM7U0FDRCxLQUFLLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyx3QkFBZSxDQUFDLEdBQUcsRUFBRSxHQUFHLEVBQUUsSUFBSSxDQUFDLENBQUMsQ0FBQTtBQUNsRCxDQUFDLENBQUE7QUFFRDtJQUNJLE1BQU07UUFDRixNQUFNLENBQUMsT0FBTyxDQUFDLE1BQU0sRUFBRTthQUNsQixHQUFHLENBQUMsS0FBSyxFQUFFLEVBQUUsQ0FBQzthQUNkLElBQUksQ0FBQyxRQUFRLEVBQUUsS0FBSyxDQUFDO2FBQ3JCLEdBQUcsQ0FBQyxTQUFTLEVBQUUsTUFBTSxDQUFDLENBQUE7SUFDL0IsQ0FBQztDQUNKO0FBRUQsTUFBTSxHQUFHLEdBQUcsSUFBSSxPQUFPLEVBQUUsQ0FBQTtBQUV6QixrQkFBZSxNQUFNLENBQUMsRUFBRSxDQUFDLE1BQU0sQ0FBQyxHQUFHLENBQUMsR0FBRyxFQUFFLEdBQUcsQ0FBQyxNQUFNLEVBQUUsQ0FBQyxDQUFBIn0=
