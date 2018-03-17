@@ -3,16 +3,27 @@ import Api from '.'
 import option from '../utils/option'
 import logger from '../log'
 import * as authService from '../service/auth-service'
-import { newHttpResponse } from '../utils/errors'
+import { sendHttpResponse } from '../utils/errors'
 import { decodedToken } from './auth-filter'
 
 import * as express from 'express'
 
 const URI = '/auth'
+
+const newUser = (req, res, next) => {
+    const name = req.body.name
+    const email = req.body.email
+    const password = req.body.password
+
+    authService.newUser(name, email, password)
+    .then(user => res.status(201).json(user))
+    .catch(err => sendHttpResponse(err, res, next))
+}
+
 const me = (req, res, next) => {
     decodedToken(req)
     .then(decoded =>  res.json(decoded))
-    .catch(err => newHttpResponse(err, res, next))
+    .catch(err => sendHttpResponse(err, res, next))
 }
 
 const logout = (req, res, next) => {
@@ -30,13 +41,14 @@ const login = (req, res, next) => {
     .then(user => {
         res.json(user)
     })
-    .catch(err => newHttpResponse(err, res, next))
+    .catch(err => sendHttpResponse(err, res, next))
 }
 
 class AuthApi implements Api {
     routes() {
         return express.Router()
             .get('/me', me)
+            .post('/users', newUser)
             .post('/login', login)
             .get('/logout', logout)
     }

@@ -2,7 +2,7 @@
 import logger from '../log'
 import option from '../utils/option'
 import * as authService from '../service/auth-service'
-import { newHttpResponse } from '../utils/errors'
+import { sendHttpResponse } from '../utils/errors'
 
 import * as config from 'config'
 
@@ -38,7 +38,7 @@ const filter = (req, res, next) => {
         logger.debug(`Auth filter will verify token to req.path=${path}`)
         decodedToken(req)
         .then(decoded =>  next())
-        .catch(err => newHttpResponse(err, res, next))
+        .catch(err => sendHttpResponse(err, res, next))
     }
 }
 

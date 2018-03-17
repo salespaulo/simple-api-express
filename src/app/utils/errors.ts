@@ -68,7 +68,7 @@ const newInvalidParameters = params =>
 
 const newUnauthorized = err => new Unauthorized(`Unauthorized error=${inspect(err)}`)
 
-const newHttpResponse = (err: Errors, res, next) => {
+const sendHttpResponse = (err: Errors, res, next) => {
     res.status(err.code).json(err)
     next()
 }
@@ -77,6 +77,6 @@ export {
     newNotFound,
     newRequiredParameters,
     newInvalidParameters, 
-    newHttpResponse, 
+    sendHttpResponse, 
     newUnauthorized
 }
